@@ -1,0 +1,108 @@
+{
+  "project_name": "default-project-structure",
+  "go_version": "1.21",
+  "dirs": [
+    {
+      "name": "cmd",
+      "dirs": [
+        {
+          "name": "inbox",
+          "files": [
+            {
+              "name": "main.go",
+              "content_file": "default_content/inbox/main.go"
+            }
+          ]
+        },
+        {
+          "name": "outbox",
+          "files": [
+            {
+              "name": "main.go",
+              "content_file": "default_content/outbox/main.go"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "config",
+      "dirs": [
+        {
+          "name": "build",
+          "files": [
+            {
+              "name": "build.go",
+              "content_file": "default_content/config/build/build.go"
+            },
+            {
+              "name": "mode.go",
+              "content_file": "default_content/config/build/mode.go"
+            }
+          ]
+        },
+        {
+          "name": "load",
+          "files": [
+            {
+              "name": "common.go",
+              "content_file": "default_content/config/load/common.go"
+            },
+            {
+              "name": "develop.go",
+              "content_file": "default_content/config/load/develop.go"
+            },
+            {
+              "name": "production.go",
+              "content_file": "default_content/config/load/production.go"
+            },
+            {
+              "name": "errors.go",
+              "content_file": "default_content/config/load/errors.go"
+            }
+          ]
+        },
+        {
+          "name": "types",
+          "files": [
+            {
+              "name": "http_server.go",
+              "content_file": "default_content/config/types/http_server.go"
+            },
+            {
+              "name": "inbox.go",
+              "content_file": "default_content/config/types/inbox.go"
+            },
+            {
+              "name": "outbox.go",
+              "content_file": "default_content/config/types/outbox.go"
+            },
+            {
+              "name": "postgres.go",
+              "content_file": "default_content/config/types/postgres.go"
+            },
+            {
+              "name": "redis.go",
+              "content_file": "default_content/config/types/redis.go"
+            }
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": ".gitignore",
+          "content_file": "default_content/config/.gitignore"
+        },
+        {
+          "name": "config.example.yaml",
+          "content_file": "default_content/config/config.example.yaml"
+        },
+        {
+          "name": "load.go",
+          "content_file": "default_content/config/load.go"
+        }
+      ]
+    }
+  ],
+  "packages": []
+}
