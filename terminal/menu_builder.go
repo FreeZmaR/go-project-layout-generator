@@ -62,6 +62,7 @@ func (b menuBuilder) makeCreateProjectMenu(position int) {
 	menu := b.makeMenuList()
 
 	b.makeDefaultProjectMenu(menu, b.menu, 1)
+	b.makeDefaultProjectWithExampleMenu(menu, b.menu, 2)
 
 	b.menu.InsertItem(
 		position,
@@ -89,13 +90,27 @@ func (b menuBuilder) makeCreateModuleMenu(position int) {
 }
 
 func (b menuBuilder) makeDefaultProjectMenu(l, parent *list.Model, position int) {
-	l.InsertItem(position,
+	l.InsertItem(
+		position,
 		NewMenuItem(
 			"Default project",
 			"Create a new project with default structure",
 			nil,
 			parent,
+			CreateDefaultProjectMenuAction(b.generator),
+		),
+	)
+}
+
+func (b menuBuilder) makeDefaultProjectWithExampleMenu(l, parent *list.Model, position int) {
+	l.InsertItem(
+		position,
+		NewMenuItem(
+			"Default project with example",
+			"Create a new project with default structure and example code",
 			nil,
+			parent,
+			CreateDefaultProjectWithExampleMenuAction(b.generator),
 		),
 	)
 }

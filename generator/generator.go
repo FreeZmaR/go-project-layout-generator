@@ -1,34 +1,37 @@
 package generator
 
-import "context"
+import (
+	"context"
+)
 
 type Generator struct {
-	dirPath   string
-	mainState *mainState
-	structure *Structure
-}
-
-type mainState struct {
-	projectName string
-	goVersion   string
+	outputDir      string
+	projectSetting *ProjectSetting
+	structure      *Structure
 }
 
 func New() *Generator {
-	return &Generator{mainState: &mainState{}}
+	return &Generator{projectSetting: newDefaultProjectSetting()}
 }
 
 func (g *Generator) Run(ctx context.Context) error {
 	return nil
 }
 
-func (g *Generator) SetProjectName(name string) *Generator {
-	g.mainState.projectName = name
-
-	return g
+func (g *Generator) ParseStructure(ctx context.Context, filePath string) error {
+	return nil
 }
 
-func (g *Generator) SetGoVersion(version string) *Generator {
-	g.mainState.goVersion = version
+func (g *Generator) ParseDefaultStructure(ctx context.Context) error {
+	return nil
+}
+
+func (g *Generator) ProjectSetting() *ProjectSetting {
+	return g.projectSetting
+}
+
+func (g *Generator) SetOutputDir(dir string) *Generator {
+	g.outputDir = dir
 
 	return g
 }
