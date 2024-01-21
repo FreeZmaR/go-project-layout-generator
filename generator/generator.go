@@ -37,7 +37,7 @@ func (g *Generator) ParseStructure(ctx context.Context, filePath string) error {
 	}
 	defer file.Close()
 
-	return json.NewDecoder(file).Decode(g.structure)
+	return g.parseStructure(file)
 }
 
 func (g *Generator) ParseDefaultStructure(ctx context.Context) error {
@@ -50,7 +50,7 @@ func (g *Generator) ParseDefaultStructure(ctx context.Context) error {
 		return err
 	}
 
-	return json.NewDecoder(structFile).Decode(g.structure)
+	return g.parseStructure(structFile)
 }
 
 func (g *Generator) ProjectSetting() *ProjectSetting {
@@ -62,7 +62,21 @@ func (g *Generator) SetOutputDir(dir string) *Generator {
 
 	return g
 }
+func (g *Generator) parseStructure(reader io.Reader) error {
+	if err := json.NewDecoder(reader).Decode(g.structure); err != nil {
+		return err
+	}
 
+	if g.projectSetting.projectName != "" {
+		g.structure.ProjectName = g.projectSetting.projectName
+	}
+
+	if g.projectSetting.goVersion != "" {
+		g.structure.GoVersion = g.projectSetting.goVersion
+	}
+
+	return nil
+}
 func (g *Generator) genOutputDir(ctx context.Context) error {
 	return g.genDir(ctx, "")
 }
@@ -138,6 +152,8 @@ func (g *Generator) genDir(ctx context.Context, dirName string) error {
 		path += "/" + dirName
 	}
 
+	path = g.replacePlaceholders(path)
+
 	info, err := os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -173,7 +189,7 @@ func (g *Generator) genFile(ctx context.Context, path string, file File) error {
 		path = path[:len(path)-1]
 	}
 
-	path += "/" + file.Name
+	path = g.replacePlaceholders(path + "/" + file.Name)
 
 	_, err := os.Stat(path)
 	if err != nil {
@@ -186,12 +202,17 @@ func (g *Generator) genFile(ctx context.Context, path string, file File) error {
 	if errF != nil {
 		return errF
 	}
+	defer f.Close()
 
 	if file.Content != "" {
-		_, errW := io.WriteString(f, file.Content)
+		_, errW := io.WriteString(f, g.replacePlaceholders(file.Content))
 
 		return errW
 	}
 
 	return nil
+}
+
+func (g *Generator) replacePlaceholders(content string) string {
+	return replaceAll(content, g.structure.ProjectName, g.structure.GoVersion)
 }

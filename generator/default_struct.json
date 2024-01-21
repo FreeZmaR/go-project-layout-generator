@@ -1,5 +1,5 @@
 {
-  "projectName": "default-project-structure",
+  "projectName": "default-app",
   "goVersion": "1.21",
   "dirs": [
     {
@@ -30,13 +30,13 @@
           ]
         },
         {
-          "name:": "app",
+          "name": "{{projectName}}",
           "isDefault": true,
           "files": [
             {
               "name": "main.go",
               "isDefault": true,
-              "content": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, World!\")\n}"
+              "content": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, {{projectName}}!\")\n}"
             }
           ]
         }
@@ -245,9 +245,14 @@
   "files": [
     {
       "name": ".gitignore",
-      "is_default": true,
+      "isDefault": true,
       "isExample": true,
       "content": ".idea\nconfig/config.yaml"
+    },
+    {
+      "name": "Makefile",
+      "isDefault": true,
+      "content" : "build:\n\tgo build -o bin/{{projectName}} cmd/{{projectName}}/main.go\n\nrun:\n\tgo run cmd/{{projectName}}/main.go\n\ntest:\n\tgo test ./...\n\nlint:\n\tgolangci-lint run\n\nmock:\n\tmockery --all --keeptree"
     }
   ]
 }
