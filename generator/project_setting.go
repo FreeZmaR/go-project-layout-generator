@@ -2,6 +2,7 @@ package generator
 
 type ProjectSetting struct {
 	projectName         string
+	shortProjectName    string
 	goVersion           string
 	withCodeExample     bool
 	useFX               bool
@@ -17,6 +18,7 @@ type packageType struct {
 func newDefaultProjectSetting() *ProjectSetting {
 	return &ProjectSetting{
 		projectName:         "",
+		shortProjectName:    "",
 		goVersion:           "1.21",
 		withCodeExample:     false,
 		useFX:               false,

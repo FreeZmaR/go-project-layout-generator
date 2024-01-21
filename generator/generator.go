@@ -71,6 +71,10 @@ func (g *Generator) parseStructure(reader io.Reader) error {
 		g.structure.ProjectName = g.projectSetting.projectName
 	}
 
+	if g.projectSetting.shortProjectName != "" {
+		g.structure.ShortProjectName = g.projectSetting.shortProjectName
+	}
+
 	if g.projectSetting.goVersion != "" {
 		g.structure.GoVersion = g.projectSetting.goVersion
 	}
@@ -214,5 +218,10 @@ func (g *Generator) genFile(ctx context.Context, path string, file File) error {
 }
 
 func (g *Generator) replacePlaceholders(content string) string {
-	return replaceAll(content, g.structure.ProjectName, g.structure.GoVersion)
+	return replaceAll(
+		content,
+		g.structure.ProjectName,
+		g.structure.ShortProjectName,
+		g.structure.GoVersion,
+	)
 }

@@ -1,5 +1,6 @@
 {
   "projectName": "default-app",
+  "shortProjectName": "default-app",
   "goVersion": "1.21",
   "dirs": [
     {
@@ -30,13 +31,13 @@
           ]
         },
         {
-          "name": "{{projectName}}",
+          "name": "{{shortProjectName}}",
           "isDefault": true,
           "files": [
             {
               "name": "main.go",
               "isDefault": true,
-              "content": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, {{projectName}}!\")\n}"
+              "content": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, {{shortProjectName}}!\")\n}"
             }
           ]
         }
@@ -253,6 +254,11 @@
       "name": "Makefile",
       "isDefault": true,
       "content" : "build:\n\tgo build -o bin/{{projectName}} cmd/{{projectName}}/main.go\n\nrun:\n\tgo run cmd/{{projectName}}/main.go\n\ntest:\n\tgo test ./...\n\nlint:\n\tgolangci-lint run\n\nmock:\n\tmockery --all --keeptree"
+    },
+    {
+      "name": "go.mod",
+      "isDefault": true,
+      "content": "module {{projectName}}\n\ngo {{goVersion}}"
     }
   ]
 }
