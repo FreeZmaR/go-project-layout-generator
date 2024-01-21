@@ -13,7 +13,7 @@ type Terminal struct {
 
 func New() *Terminal {
 	t := &Terminal{generator: generator.New()}
-	t.initController()
+	t.controller = NewController(buildMenu(t.generator))
 
 	return t
 }
@@ -22,10 +22,4 @@ func (t *Terminal) Run() error {
 	_, err := tea.NewProgram(t.controller, tea.WithOutput(os.Stderr)).Run()
 
 	return err
-}
-
-func (t *Terminal) initController() {
-	menu := buildMenu(t.generator)
-
-	t.controller = NewController(menu)
 }
