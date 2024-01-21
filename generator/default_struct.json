@@ -1,25 +1,42 @@
 {
-  "project_name": "default-project-structure",
-  "go_version": "1.21",
+  "projectName": "default-project-structure",
+  "goVersion": "1.21",
   "dirs": [
     {
       "name": "cmd",
+      "isExample": true,
+      "isDefault": true,
       "dirs": [
         {
           "name": "inbox",
+          "isExample": true,
           "files": [
             {
               "name": "main.go",
-              "content_file": "default_content/inbox/main.go"
+              "isExample": true,
+              "contentFile": "default_content/inbox/main.go"
             }
           ]
         },
         {
           "name": "outbox",
+          "isExample": true,
           "files": [
             {
               "name": "main.go",
-              "content_file": "default_content/outbox/main.go"
+              "isExample": true,
+              "contentFile": "default_content/outbox/main.go"
+            }
+          ]
+        },
+        {
+          "name:": "app",
+          "isDefault": true,
+          "files": [
+            {
+              "name": "main.go",
+              "isDefault": true,
+              "content": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, World!\")\n}"
             }
           ]
         }
@@ -27,63 +44,82 @@
     },
     {
       "name": "config",
+      "isExample": true,
+      "isDefault": true,
       "dirs": [
         {
           "name": "build",
+          "isDefault": true,
+          "isExample": true,
           "files": [
             {
               "name": "build.go",
-              "content_file": "default_content/config/build/build.go"
+              "isExample": true,
+              "contentFile": "default_content/config/build/build.go"
             },
             {
               "name": "mode.go",
-              "content_file": "default_content/config/build/mode.go"
+              "isExample": true,
+              "contentFile": "default_content/config/build/mode.go"
             }
           ]
         },
         {
           "name": "load",
+          "isDefault": true,
+          "isExample": true,
           "files": [
             {
               "name": "common.go",
-              "content_file": "default_content/config/load/common.go"
+              "isExample": true,
+              "contentFile": "default_content/config/load/common.go"
             },
             {
               "name": "develop.go",
-              "content_file": "default_content/config/load/develop.go"
+              "isExample": true,
+              "contentFile": "default_content/config/load/develop.go"
             },
             {
               "name": "production.go",
-              "content_file": "default_content/config/load/production.go"
+              "isExample": true,
+              "contentFile": "default_content/config/load/production.go"
             },
             {
               "name": "errors.go",
-              "content_file": "default_content/config/load/errors.go"
+              "isExample": true,
+              "contentFile": "default_content/config/load/errors.go"
             }
           ]
         },
         {
           "name": "types",
+          "isExample": true,
+          "isDefault": true,
           "files": [
             {
               "name": "http_server.go",
-              "content_file": "default_content/config/types/http_server.go"
+              "isExample": true,
+              "contentFile": "default_content/config/types/http_server.go"
             },
             {
               "name": "inbox.go",
-              "content_file": "default_content/config/types/inbox.go"
+              "isExample": true,
+              "contentFile": "default_content/config/types/inbox.go"
             },
             {
               "name": "outbox.go",
-              "content_file": "default_content/config/types/outbox.go"
+              "isExample": true,
+              "contentFile": "default_content/config/types/outbox.go"
             },
             {
               "name": "postgres.go",
-              "content_file": "default_content/config/types/postgres.go"
+              "isExample": true,
+              "contentFile": "default_content/config/types/postgres.go"
             },
             {
               "name": "redis.go",
-              "content_file": "default_content/config/types/redis.go"
+              "isExample": true,
+              "contentFile": "default_content/config/types/redis.go"
             }
           ]
         }
@@ -91,18 +127,127 @@
       "files": [
         {
           "name": ".gitignore",
-          "content_file": "default_content/config/.gitignore"
+          "isExample": true,
+          "contentFile": "default_content/config/.gitignore"
         },
         {
           "name": "config.example.yaml",
-          "content_file": "default_content/config/config.example.yaml"
+          "isExample": true,
+          "contentFile": "default_content/config/config.example.yaml"
         },
         {
           "name": "load.go",
-          "content_file": "default_content/config/load.go"
+          "isExample": true,
+          "contentFile": "default_content/config/load.go"
+        },
+        {
+          "name": "config.example.yaml",
+          "isDefault": true,
+          "content": "app:\n\tname: \"default-app\""
         }
       ]
+    },
+    {
+      "name": "internal",
+      "isExample": true,
+      "isDefault": true,
+      "dirs": [
+        {
+          "name": "app",
+          "isExample": true,
+          "isDefault": true,
+          "dirs": [
+            {
+              "name": "httpsrv",
+              "isExample": true
+            }
+          ]
+        },
+        {
+          "name": "domain",
+          "isExample": true,
+          "isDefault": true,
+          "dirs": [
+            {
+              "name": "aggregate",
+              "isExample": true,
+              "isDefault": true
+            },
+            {
+              "name": "definition",
+              "isExample": true,
+              "isDefault": true
+            },
+            {
+              "name": "model",
+              "isExample": true,
+              "isDefault": true
+            },
+            {
+              "name": "objvalue",
+              "isExample": true,
+              "isDefault": true
+            }
+          ]
+        },
+        {
+          "name": "lib",
+          "isExample": true,
+          "isDefault": true
+        },
+        {
+          "name": "repository",
+          "isExample": true,
+          "isDefault": true,
+          "files": [
+            {
+              "name": "interfaces.go",
+              "isDefault": true,
+              "content": "package repository\n\ntype (\n\tSomeRepo interface{}\n)"
+            }
+          ]
+        },
+        {
+          "name": "usecase",
+          "isExample": true,
+          "isDefault": true,
+          "files": [
+            {
+              "name": "interfaces.go",
+              "isDefault": true,
+              "content": "package usecase\n\ntype (\n\tSomeUC interface{}\n)"
+            }
+          ]
+        },
+        {
+          "name": "storage",
+          "isExample": true,
+          "isDefault": true,
+          "dirs": [
+            {
+              "name": "pg",
+              "isExample": true
+            },
+            {
+              "name": "rd",
+              "isExample": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "docker",
+      "isDefault": true
     }
   ],
-  "packages": []
+  "packages": [],
+  "files": [
+    {
+      "name": ".gitignore",
+      "is_default": true,
+      "isExample": true,
+      "content": ".idea\nconfig/config.yaml"
+    }
+  ]
 }

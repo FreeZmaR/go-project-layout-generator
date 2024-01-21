@@ -48,7 +48,7 @@ func (c Controller) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 
 	if c.showActionModel {
-		return c.updateActionModel(msg, c)
+		return c.updateActionModel(msg, c, nil)
 	}
 
 	return c, nil
@@ -73,11 +73,11 @@ func (c Controller) updateMenu(msg tea.Msg, controller Controller) (Controller, 
 	return controller, cmd
 }
 
-func (c Controller) updateActionModel(msg tea.Msg, controller Controller) (Controller, tea.Cmd) {
-	var cmd tea.Cmd
-	controller.actionModel, cmd = controller.actionModel.Update(msg)
+func (c Controller) updateActionModel(msg tea.Msg, controller Controller, cmd tea.Cmd) (Controller, tea.Cmd) {
+	var cmdUP tea.Cmd
+	controller.actionModel, cmdUP = controller.actionModel.Update(msg)
 
-	return controller, cmd
+	return controller, tea.Batch(cmd, cmdUP)
 }
 
 func (c Controller) handleKeyAction(key tea.KeyMsg) (Controller, tea.Cmd) {
@@ -97,6 +97,16 @@ func (c Controller) handleEnterAction(msg tea.Msg) (Controller, tea.Cmd) {
 	item, ok := c.menu.SelectedItem().(MenuItem)
 	if !ok {
 		return c.updateMenu(msg, c)
+	}
+
+	if nil != item.action {
+		c.showActionModel = true
+		c.showMenu = false
+
+		var cmd tea.Cmd
+		c.actionModel, cmd = item.action(c.style)
+
+		return c.updateActionModel(msg, c, cmd)
 	}
 
 	if nil == item.menu {

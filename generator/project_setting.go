@@ -35,3 +35,9 @@ func (s *ProjectSetting) SetGoVersion(version string) *ProjectSetting {
 
 	return s
 }
+
+func (s *ProjectSetting) SetWithCodeExample(withExample bool) *ProjectSetting {
+	s.withCodeExample = withExample
+
+	return s
+}
