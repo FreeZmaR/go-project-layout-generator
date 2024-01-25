@@ -24,7 +24,7 @@ func (s Selective) Init() tea.Cmd {
 	return nil
 }
 
-func (s Selective) Update(msg tea.Msg) (Component, tea.Cmd) {
+func (s Selective) Update(_ tea.Msg) (Component, tea.Cmd) {
 	if s.checkFN() {
 		return s.success, s.success.Init()
 	}
@@ -32,7 +32,7 @@ func (s Selective) Update(msg tea.Msg) (Component, tea.Cmd) {
 	return s.failure, s.failure.Init()
 }
 
-func (s Selective) SetSize(width, height int) {}
+func (s Selective) SetSize(_, _ int) {}
 
 func (s Selective) View() string {
 	if s.checkFN() {
