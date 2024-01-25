@@ -1,6 +1,6 @@
 {
+  "modName": "default-app",
   "projectName": "default-app",
-  "shortProjectName": "default-app",
   "goVersion": "1.21",
   "dirs": [
     {
@@ -31,13 +31,13 @@
           ]
         },
         {
-          "name": "{{shortProjectName}}",
+          "name": "{{projectName}}",
           "isDefault": true,
           "files": [
             {
               "name": "main.go",
               "isDefault": true,
-              "content": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, {{shortProjectName}}!\")\n}"
+              "content": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello, {{projectName}}!\")\n}"
             }
           ]
         }
@@ -258,7 +258,7 @@
     {
       "name": "go.mod",
       "isDefault": true,
-      "content": "module {{projectName}}\n\ngo {{goVersion}}"
+      "content": "module {{modName}}\n\ngo {{goVersion}}"
     }
   ]
 }

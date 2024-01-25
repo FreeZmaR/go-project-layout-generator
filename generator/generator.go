@@ -9,13 +9,18 @@ import (
 )
 
 type Generator struct {
-	outputDir      string
-	projectSetting *ProjectSetting
-	structure      *Structure
+	outputDir         string
+	projectSetting    *ProjectSetting
+	structure         *Structure
+	isStructureParsed bool
 }
 
 func New() *Generator {
-	return &Generator{projectSetting: newDefaultProjectSetting(), structure: &Structure{}}
+	return &Generator{
+		projectSetting:    newDefaultProjectSetting(),
+		structure:         &Structure{},
+		isStructureParsed: false,
+	}
 }
 
 func (g *Generator) Run(ctx context.Context) error {
@@ -45,6 +50,8 @@ func (g *Generator) ParseDefaultStructure(ctx context.Context) error {
 		return ctx.Err()
 	}
 
+	g.projectSetting.SetDefault()
+
 	structFile, err := defaultStructureFS.Open(defaultStructureFileName)
 	if err != nil {
 		return err
@@ -67,17 +74,19 @@ func (g *Generator) parseStructure(reader io.Reader) error {
 		return err
 	}
 
-	if g.projectSetting.projectName != "" {
-		g.structure.ProjectName = g.projectSetting.projectName
+	if g.projectSetting.modName != "" {
+		g.structure.ModName = g.projectSetting.modName
 	}
 
-	if g.projectSetting.shortProjectName != "" {
-		g.structure.ShortProjectName = g.projectSetting.shortProjectName
+	if g.projectSetting.projectName != "" {
+		g.structure.ProjectName = g.projectSetting.projectName
 	}
 
 	if g.projectSetting.goVersion != "" {
 		g.structure.GoVersion = g.projectSetting.goVersion
 	}
+
+	g.isStructureParsed = true
 
 	return nil
 }
@@ -90,7 +99,7 @@ func (g *Generator) genProject(ctx context.Context) error {
 		return ctx.Err()
 	}
 
-	if nil == g.structure {
+	if nil == g.structure || !g.isStructureParsed {
 		return errors.New("structure is not defined")
 	}
 
@@ -220,8 +229,8 @@ func (g *Generator) genFile(ctx context.Context, path string, file File) error {
 func (g *Generator) replacePlaceholders(content string) string {
 	return replaceAll(
 		content,
+		g.structure.ModName,
 		g.structure.ProjectName,
-		g.structure.ShortProjectName,
 		g.structure.GoVersion,
 	)
 }

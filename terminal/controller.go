@@ -1,145 +1,70 @@
 package terminal
 
 import (
-	"github.com/charmbracelet/bubbles/list"
+	"github.com/FreeZmaR/go-project-layout-generator/terminal/component"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 type Controller struct {
-	style           lipgloss.Style
-	menu            list.Model
-	showMenu        bool
-	actionModel     tea.Model
-	showActionModel bool
-	height          int
-	width           int
+	style      lipgloss.Style
+	eventStack *component.EventStack
+	component  component.Component
+	height     int
+	width      int
 }
 
 var _ tea.Model = (*Controller)(nil)
 
-func NewController(l list.Model) Controller {
+func NewController(eventStack *component.EventStack, c component.Component) Controller {
 	return Controller{
-		style:           lipgloss.NewStyle().Margin(1, 2),
-		menu:            l,
-		showMenu:        true,
-		showActionModel: false,
+		style:      lipgloss.NewStyle().Margin(1, 2),
+		eventStack: eventStack,
+		component:  c,
 	}
 }
 
 func (c Controller) Init() tea.Cmd {
-	return nil
+	return c.component.Init()
 }
 
 func (c Controller) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch t := msg.(type) {
-	case tea.KeyMsg:
-		return c.handleKeyAction(t)
 	case tea.WindowSizeMsg:
 		h, v := c.style.GetFrameSize()
 		c.height = t.Height - v
 		c.width = t.Width - h
 
-		c.menu.SetSize(c.width, c.height)
+		c.component.SetSize(c.width, c.height)
 	}
 
-	if c.showMenu {
-		return c.updateMenu(msg, c)
-	}
+	var cmd tea.Cmd
+	c.component, cmd = c.component.Update(msg)
 
-	if c.showActionModel {
-		return c.updateActionModel(msg, c, nil)
-	}
+	c.component = c.handleEvent()
 
-	return c, nil
+	return c, cmd
 }
 
 func (c Controller) View() string {
-	if c.showMenu {
-		return c.style.Render(c.menu.View())
-	}
-
-	if c.showActionModel {
-		return c.style.Render(c.actionModel.View())
-	}
-
-	return "something went wrong"
+	return c.style.Render(c.component.View())
 }
 
-func (c Controller) updateMenu(msg tea.Msg, controller Controller) (Controller, tea.Cmd) {
-	var cmd tea.Cmd
-	controller.menu, cmd = controller.menu.Update(msg)
-
-	return controller, cmd
-}
-
-func (c Controller) updateActionModel(msg tea.Msg, controller Controller, cmd tea.Cmd) (Controller, tea.Cmd) {
-	var cmdUP tea.Cmd
-	controller.actionModel, cmdUP = controller.actionModel.Update(msg)
-
-	return controller, tea.Batch(cmd, cmdUP)
-}
-
-func (c Controller) handleKeyAction(key tea.KeyMsg) (Controller, tea.Cmd) {
-	switch key.String() {
-	case "ctrl+c":
-		return c, tea.Quit
-	case "enter":
-		return c.handleEnterAction(key)
-	case "backspace", tea.KeyCtrlQuestionMark.String():
-		return c.handleBackAction(key)
+func (c Controller) handleEvent() component.Component {
+	if !c.eventStack.Has() {
+		return c.component
 	}
 
-	return c.updateMenu(key, c)
-}
-
-func (c Controller) handleEnterAction(msg tea.Msg) (Controller, tea.Cmd) {
-	item, ok := c.menu.SelectedItem().(MenuItem)
-	if !ok {
-		return c.updateMenu(msg, c)
+	if !c.component.IsDone() {
+		return c.component
 	}
 
-	if nil != item.action {
-		c.showActionModel = true
-		c.showMenu = false
-
-		var cmd tea.Cmd
-		c.actionModel, cmd = item.action(c.style)
-
-		return c.updateActionModel(msg, c, cmd)
+	comp := c.eventStack.Get()
+	if comp == nil {
+		return c.component
 	}
 
-	if nil == item.menu {
-		return c.updateMenu(msg, c)
-	}
+	comp.SetSize(c.width, c.height)
 
-	var cmd tea.Cmd
-
-	c.menu, cmd = (*item.menu).Update(msg)
-	c.menu.SetSize(c.width, c.height)
-
-	return c, cmd
-}
-
-func (c Controller) handleBackAction(msg tea.Msg) (Controller, tea.Cmd) {
-	if c.showActionModel {
-		c.showActionModel = false
-		c.showMenu = true
-
-		var cmd tea.Cmd
-		c.menu, cmd = c.menu.Update(msg)
-
-		return c, cmd
-	}
-
-	item, ok := (c.menu.Items()[0]).(MenuItem)
-	if !ok || nil == item.back {
-		return c.updateMenu(msg, c)
-	}
-
-	var cmd tea.Cmd
-	c.menu, cmd = (*item.back).Update(msg)
-	c.menu.SetSize(c.width, c.height)
-
-	return c, cmd
+	return comp
 }

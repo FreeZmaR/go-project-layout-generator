@@ -3,8 +3,8 @@ package generator
 import "strings"
 
 const (
-	projectNamePlaceholder      = "{{projectName}}"
-	shortProjectNamePlaceholder = "{{shortProjectName}}"
+	projectNamePlaceholder      = "{{modName}}"
+	shortProjectNamePlaceholder = "{{projectName}}"
 	goVersionPlaceholder        = "{{goVersion}}"
 )
 

@@ -13,12 +13,12 @@ var (
 )
 
 type Structure struct {
-	ProjectName      string    `json:"projectName"`
-	ShortProjectName string    `json:"shortProjectName,omitempty"`
-	Dirs             []Dir     `json:"dirs"`
-	GoVersion        string    `json:"goVersion"`
-	Packages         []Package `json:"packages"`
-	Files            []File    `json:"files"`
+	ModName     string    `json:"modName"`
+	ProjectName string    `json:"projectName,omitempty"`
+	Dirs        []Dir     `json:"dirs"`
+	GoVersion   string    `json:"goVersion"`
+	Packages    []Package `json:"packages"`
+	Files       []File    `json:"files"`
 }
 
 type Dir struct {

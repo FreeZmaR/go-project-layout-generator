@@ -2,115 +2,106 @@ package terminal
 
 import (
 	"github.com/FreeZmaR/go-project-layout-generator/generator"
-	"github.com/charmbracelet/bubbles/key"
-	"github.com/charmbracelet/bubbles/list"
+	"github.com/FreeZmaR/go-project-layout-generator/terminal/component"
 )
 
 type menuBuilder struct {
-	menu      *list.Model
-	generator *generator.Generator
+	menu       *component.List
+	generator  *generator.Generator
+	eventStack *component.EventStack
 }
 
-func buildMenu(gen *generator.Generator) list.Model {
+func buildMenu(gen *generator.Generator, eventStack *component.EventStack) component.Component {
 	builder := menuBuilder{
-		generator: gen,
+		generator:  gen,
+		eventStack: eventStack,
 	}
 
-	builder.menu = builder.makeMenuList()
 	builder.makeMainMenu()
 
-	return *builder.menu
+	return builder.menu
 }
 
-func (b menuBuilder) makeMenuList() *list.Model {
-	l := list.New([]list.Item{}, list.NewDefaultDelegate(), 0, 0)
-
-	l.AdditionalShortHelpKeys = func() []key.Binding {
-		return []key.Binding{
-			key.NewBinding(
-				key.WithKeys("<-"),
-				key.WithHelp("<-", "back"),
-			),
-		}
-	}
-
-	l.AdditionalFullHelpKeys = func() []key.Binding {
-		return []key.Binding{
-			key.NewBinding(
-				key.WithKeys("enter", "<-"),
-				key.WithHelp("enter", "select"),
-				key.WithHelp("<-", "back"),
-			),
-		}
-	}
-
-	l.KeyMap.Filter.Unbind()
-	l.KeyMap.GoToEnd.Unbind()
-	l.KeyMap.GoToStart.Unbind()
-
-	return &l
-}
-
-func (b menuBuilder) makeMainMenu() {
-	b.menu.Title = "Generator menu"
-
-	b.makeCreateProjectMenu(1)
-	b.makeCreateModuleMenu(2)
-}
-
-func (b menuBuilder) makeCreateProjectMenu(position int) {
-	menu := b.makeMenuList()
-
-	b.makeDefaultProjectMenu(menu, b.menu, 1)
-	b.makeDefaultProjectWithExampleMenu(menu, b.menu, 2)
-
-	b.menu.InsertItem(
-		position,
-		NewMenuItem(
-			"Create project",
-			"Create a new project",
-			menu,
-			nil,
-			nil,
-		),
+func (b *menuBuilder) makeMainMenu() {
+	b.menu = component.NewList(
+		"Generator menu",
+		b.makeCreateProjectMenu(),
+		b.makeCreateModuleMenu(),
 	)
 }
 
-func (b menuBuilder) makeCreateModuleMenu(position int) {
-	b.menu.InsertItem(
-		position,
-		NewMenuItem(
-			"Create module",
-			"Create a new module in the project",
-			nil,
-			nil,
-			nil,
-		),
+func (b *menuBuilder) makeCreateProjectMenu() component.ListItem {
+	menu := component.NewList(
+		"Create project",
+		b.makeDefaultProjectMenu(),
+		b.makeDefaultProjectWithExampleMenu(),
+	)
+
+	return component.NewListItem(
+		"Create project",
+		"Create a new project",
+		func(_ any) error {
+			b.menu.SetIsNotDone()
+			b.eventStack.Push(menu)
+
+			return nil
+		},
+		func(_ any) error {
+			b.menu.SetIsNotDone()
+			b.eventStack.Push(b.menu)
+
+			return nil
+		},
 	)
 }
 
-func (b menuBuilder) makeDefaultProjectMenu(l, parent *list.Model, position int) {
-	l.InsertItem(
-		position,
-		NewMenuItem(
-			"Default project",
-			"Create a new project with default structure",
-			nil,
-			parent,
-			CreateDefaultProjectMenuAction(b.generator),
-		),
+func (b *menuBuilder) makeCreateModuleMenu() component.ListItem {
+	return component.NewListItem(
+		"Create module",
+		"Create a new module",
+		func(_ any) error {
+			return nil
+		},
+		func(_ any) error {
+			return nil
+		},
 	)
 }
 
-func (b menuBuilder) makeDefaultProjectWithExampleMenu(l, parent *list.Model, position int) {
-	l.InsertItem(
-		position,
-		NewMenuItem(
-			"Default project with example",
-			"Create a new project with default structure and example code",
-			nil,
-			parent,
-			CreateDefaultProjectWithExampleMenuAction(b.generator),
-		),
+func (b *menuBuilder) makeDefaultProjectMenu() component.ListItem {
+	return component.NewListItem(
+		"Create project",
+		"Create a new project with default settings",
+		func(data any) error {
+			var list *component.List
+
+			list = data.(*component.List)
+
+			component.GenerateDefaultProjectAction(list, b.generator, b.eventStack)
+
+			return nil
+		},
+		func(_ any) error {
+			b.menu.SetIsNotDone()
+			b.eventStack.Push(b.menu)
+
+			return nil
+		},
+	)
+}
+
+func (b *menuBuilder) makeDefaultProjectWithExampleMenu() component.ListItem {
+	return component.NewListItem(
+		"Create default project with example",
+		"Crate a new default project with code example(http-server)",
+		func(_ any) error {
+			return nil
+		},
+		func(_ any) error {
+			b.menu.SetIsNotDone()
+			b.eventStack.Push(b.menu)
+
+			return nil
+		},
 	)
 }
