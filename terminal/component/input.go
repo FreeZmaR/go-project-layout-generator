@@ -1,9 +1,12 @@
 package component
 
 import (
+	"github.com/charmbracelet/bubbles/help"
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"strings"
 )
 
 type Input struct {
@@ -12,6 +15,30 @@ type Input struct {
 	value       string
 	isDone      bool
 	isCancelled bool
+	help        help.Model
+	width       int
+	keyMap      inputHelpKeyMap
+}
+
+type inputHelpKeyMap struct {
+	Enter     key.Binding
+	Escape    key.Binding
+	Quit      key.Binding
+	Backspace key.Binding
+	Left      key.Binding
+	Right     key.Binding
+	Help      key.Binding
+}
+
+func (k inputHelpKeyMap) ShortHelp() []key.Binding {
+	return []key.Binding{k.Help, k.Quit, k.Enter, k.Escape, k.Backspace, k.Left, k.Right}
+}
+
+func (k inputHelpKeyMap) FullHelp() [][]key.Binding {
+	return [][]key.Binding{
+		{k.Enter, k.Escape, k.Backspace, k.Left, k.Right}, // first column
+		{k.Help, k.Quit}, // second column
+	}
 }
 
 var _ Component = (*Input)(nil)
@@ -25,6 +52,8 @@ func NewInput(label, placeholder string) *Input {
 		textInput: ti,
 		label:     label,
 		isDone:    false,
+		help:      help.New(),
+		keyMap:    initInputHelpKeyMap(),
 	}
 }
 
@@ -35,11 +64,13 @@ func (i *Input) Init() tea.Cmd {
 func (i *Input) Update(msg tea.Msg) (Component, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch true {
+		switch {
 		case CtrlCKeyUp(msg):
 			return i, tea.Quit
 		case EnterKeyUp(msg):
 			i.isDone = true
+		case key.Matches(msg, i.keyMap.Help):
+			i.help.ShowAll = !i.help.ShowAll
 		}
 	}
 
@@ -50,14 +81,25 @@ func (i *Input) Update(msg tea.Msg) (Component, tea.Cmd) {
 }
 
 func (i *Input) View() string {
+	text := i.textInput.Value()
+	helpText := i.help.View(i.keyMap)
+	height := 8 - strings.Count(text, "\n") - strings.Count(helpText, "\n")
+
 	return lipgloss.JoinVertical(
 		lipgloss.Left,
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#EDEDED")).Render(i.label),
-		i.textInput.View(),
+		lipgloss.JoinVertical(
+			lipgloss.Left,
+			i.textInput.View(),
+			"\n"+strings.Repeat("\n", height)+helpText,
+		),
 	)
 }
 
-func (i *Input) SetSize(_, _ int) {}
+func (i *Input) SetSize(width, _ int) {
+	i.width = width
+	i.help.Width = width
+}
 
 func (i *Input) IsDone() bool {
 	return i.isDone
@@ -73,4 +115,15 @@ func (i *Input) Reset() {
 
 func (i *Input) Value() string {
 	return i.textInput.Value()
+}
+
+func initInputHelpKeyMap() inputHelpKeyMap {
+	return inputHelpKeyMap{
+		Enter:     key.NewBinding(key.WithKeys("enter"), key.WithHelp("↵", "Submit")),
+		Escape:    key.NewBinding(key.WithKeys("esc"), key.WithHelp("esc", "Cancel")),
+		Quit:      key.NewBinding(key.WithKeys("q", "ctrl+c"), key.WithHelp("q", "Quit")),
+		Backspace: key.NewBinding(key.WithKeys("delete"), key.WithHelp("\u232B", "Delete")),
+		Left:      key.NewBinding(key.WithKeys("right"), key.WithHelp("←", "Move cursor left")),
+		Right:     key.NewBinding(key.WithKeys("left"), key.WithHelp("→", "Move cursor right")),
+	}
 }
