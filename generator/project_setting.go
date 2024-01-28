@@ -1,12 +1,14 @@
 package generator
 
 const (
+	DefaultOutputDir   = "./"
 	DefaultProjectName = "default-app"
 	DefaultModName     = "default-app"
 	DefaultGoVersion   = "1.21"
 )
 
 type ProjectSetting struct {
+	outputDir           string
 	modName             string
 	projectName         string
 	goVersion           string
@@ -24,6 +26,7 @@ type packageType struct {
 
 func newDefaultProjectSetting() *ProjectSetting {
 	return &ProjectSetting{
+		outputDir:           DefaultOutputDir,
 		modName:             DefaultModName,
 		projectName:         DefaultProjectName,
 		goVersion:           DefaultGoVersion,
@@ -32,6 +35,12 @@ func newDefaultProjectSetting() *ProjectSetting {
 		needInstallPackages: false,
 		isDefault:           true,
 	}
+}
+
+func (s *ProjectSetting) SetOutputDir(dir string) *ProjectSetting {
+	s.outputDir = dir
+
+	return s
 }
 
 func (s *ProjectSetting) SetModName(name string) *ProjectSetting {
@@ -68,6 +77,10 @@ func (s *ProjectSetting) SetCustom() *ProjectSetting {
 	s.isDefault = false
 
 	return s
+}
+
+func (s *ProjectSetting) OutputDir() string {
+	return s.outputDir
 }
 
 func (s *ProjectSetting) ModName() string {

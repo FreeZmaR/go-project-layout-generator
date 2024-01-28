@@ -7,7 +7,10 @@ import (
 )
 
 func GenerateDefaultProjectAction(cancel Component, gen *generator.Generator, eventStack *EventStack) {
-	inputOutputDir := NewInput("Output directory (default: . )", "Enter output directory")
+	inputOutputDir := NewInput(
+		fmt.Sprintf("Output directory (default: %s )", generator.DefaultOutputDir),
+		"Enter output directory",
+	)
 	inputModeName := NewInput(
 		fmt.Sprintf("Project Mod name (default: %s)", generator.DefaultModName),
 		"Enter project name for mod.go",
@@ -34,10 +37,10 @@ func GenerateDefaultProjectAction(cancel Component, gen *generator.Generator, ev
 				}
 
 				if inputOutputDir.Value() != "" {
-					gen.SetOutputDir(inputOutputDir.Value())
+					gen.ProjectSetting().SetOutputDir(inputOutputDir.Value())
 				}
 
-				dirName := gen.OutputDir()
+				dirName := gen.ProjectSetting().OutputDir()
 				if dirName == "" {
 					dirName = "."
 				}

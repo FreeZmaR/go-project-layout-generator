@@ -9,7 +9,6 @@ import (
 )
 
 type Generator struct {
-	outputDir         string
 	projectSetting    *ProjectSetting
 	structure         *Structure
 	isStructureParsed bool
@@ -64,15 +63,6 @@ func (g *Generator) ProjectSetting() *ProjectSetting {
 	return g.projectSetting
 }
 
-func (g *Generator) OutputDir() string {
-	return g.outputDir
-}
-
-func (g *Generator) SetOutputDir(dir string) *Generator {
-	g.outputDir = dir
-
-	return g
-}
 func (g *Generator) parseStructure(reader io.Reader) error {
 	if err := json.NewDecoder(reader).Decode(g.structure); err != nil {
 		return err
@@ -164,7 +154,7 @@ func (g *Generator) genDir(ctx context.Context, dirName string) error {
 		return ctx.Err()
 	}
 
-	path := g.outputDir
+	path := g.ProjectSetting().OutputDir()
 	if dirName != "" {
 		path += "/" + dirName
 	}
@@ -200,7 +190,7 @@ func (g *Generator) genFile(ctx context.Context, path string, file File) error {
 		return nil
 	}
 
-	path = g.outputDir + "/" + path
+	path = g.ProjectSetting().OutputDir() + "/" + path
 
 	if path[len(path)-1] == '/' {
 		path = path[:len(path)-1]
