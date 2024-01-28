@@ -7,10 +7,19 @@ import (
 )
 
 func GenerateDefaultProjectAction(cancel Component, gen *generator.Generator, eventStack *EventStack) {
-
-	inputOutputDir := NewInput("Output directory", "Enter output directory")
-	inputModeName := NewInput("Project Mod name", "Enter project name for mod.go")
-	inputProjectName := NewInput("Project name", "Enter project name")
+	inputOutputDir := NewInput("Output directory (default: . )", "Enter output directory")
+	inputModeName := NewInput(
+		fmt.Sprintf("Project Mod name (default: %s", generator.DefaultModName),
+		"Enter project name for mod.go",
+	)
+	inputProjectName := NewInput(
+		fmt.Sprintf("Project name (default: %s", generator.DefaultProjectName),
+		"Enter project name",
+	)
+	inputGoVersion := NewInput(
+		fmt.Sprintf("Go version (default: %s)", generator.DefaultGoVersion),
+		"Enter go version",
+	)
 
 	eventStack.Push(inputOutputDir)
 	eventStack.Push(
@@ -22,7 +31,9 @@ func GenerateDefaultProjectAction(cancel Component, gen *generator.Generator, ev
 					return false
 				}
 
-				gen.SetOutputDir(inputOutputDir.Value())
+				if inputOutputDir.Value() != "" {
+					gen.SetOutputDir(inputOutputDir.Value())
+				}
 
 				return true
 			},
@@ -37,7 +48,9 @@ func GenerateDefaultProjectAction(cancel Component, gen *generator.Generator, ev
 					return false
 				}
 
-				gen.ProjectSetting().SetModName(inputModeName.Value())
+				if inputModeName.Value() != "" {
+					gen.ProjectSetting().SetModName(inputModeName.Value())
+				}
 
 				return true
 			},
@@ -52,7 +65,26 @@ func GenerateDefaultProjectAction(cancel Component, gen *generator.Generator, ev
 					return false
 				}
 
-				gen.ProjectSetting().SetProjectName(inputProjectName.Value())
+				if inputProjectName.Value() != "" {
+					gen.ProjectSetting().SetProjectName(inputProjectName.Value())
+				}
+
+				return true
+			},
+		),
+	)
+	eventStack.Push(
+		NewSelective(
+			inputGoVersion,
+			cancel,
+			func() bool {
+				if inputGoVersion.IsCancelled() {
+					return false
+				}
+
+				if inputGoVersion.Value() != "" {
+					gen.ProjectSetting().SetGoVersion(inputGoVersion.Value())
+				}
 
 				return true
 			},
@@ -92,7 +124,7 @@ func GenerateDefaultProjectAction(cancel Component, gen *generator.Generator, ev
 			),
 			cancel,
 			func() bool {
-				if inputModeName.IsCancelled() {
+				if inputGoVersion.IsCancelled() {
 					return false
 				}
 

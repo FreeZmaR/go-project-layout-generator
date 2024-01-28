@@ -1,5 +1,11 @@
 package generator
 
+const (
+	DefaultProjectName = "default-app"
+	DefaultModName     = "default-app"
+	DefaultGoVersion   = "1.21"
+)
+
 type ProjectSetting struct {
 	modName             string
 	projectName         string
@@ -18,9 +24,9 @@ type packageType struct {
 
 func newDefaultProjectSetting() *ProjectSetting {
 	return &ProjectSetting{
-		modName:             "default-app",
-		projectName:         "default-app",
-		goVersion:           "1.21",
+		modName:             DefaultModName,
+		projectName:         DefaultProjectName,
+		goVersion:           DefaultGoVersion,
 		withCodeExample:     false,
 		useFX:               false,
 		needInstallPackages: false,
