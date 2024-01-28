@@ -5,18 +5,20 @@ import (
 )
 
 type Selective struct {
-	success Component
-	failure Component
-	checkFN func() bool
+	success   Component
+	failure   Component
+	checkFN   func() bool
+	isSuccess bool
 }
 
 var _ Component = (*Selective)(nil)
 
 func NewSelective(success, failure Component, checkFN func() bool) Selective {
 	return Selective{
-		success: success,
-		failure: failure,
-		checkFN: checkFN,
+		success:   success,
+		failure:   failure,
+		checkFN:   checkFN,
+		isSuccess: false,
 	}
 }
 

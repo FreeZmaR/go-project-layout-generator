@@ -77,3 +77,7 @@ func (s *ProjectSetting) ModName() string {
 func (s *ProjectSetting) ProjectName() string {
 	return s.projectName
 }
+
+func (s *ProjectSetting) GoVersion() string {
+	return s.goVersion
+}

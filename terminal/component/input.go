@@ -18,6 +18,36 @@ type Input struct {
 	help        help.Model
 	width       int
 	keyMap      inputHelpKeyMap
+	infoValue   string
+}
+
+type inputInfoPool struct {
+	inputs []*Input
+	data   map[string]string
+}
+
+func newInputInfoPool(inputs ...*Input) *inputInfoPool {
+	return &inputInfoPool{
+		inputs: inputs,
+	}
+}
+
+func (p *inputInfoPool) PutInfoValue(name, value string) *inputInfoPool {
+	if nil == p.data {
+		p.data = make(map[string]string)
+	}
+
+	if _, ok := p.data[name]; ok {
+		return p
+	}
+
+	p.data[name] = value
+
+	for _, input := range p.inputs {
+		input.PutInfoValue(name, value)
+	}
+
+	return p
 }
 
 type inputHelpKeyMap struct {
@@ -85,14 +115,32 @@ func (i *Input) View() string {
 	helpText := i.help.View(i.keyMap)
 	height := 8 - strings.Count(text, "\n") - strings.Count(helpText, "\n")
 
-	return lipgloss.JoinVertical(
+	if len(i.infoValue) == 0 {
+		return lipgloss.JoinVertical(
+			lipgloss.Left,
+			lipgloss.NewStyle().Foreground(lipgloss.Color("#EDEDED")).Render(i.label),
+			lipgloss.JoinVertical(
+				lipgloss.Left,
+				i.textInput.View(),
+				"\n"+strings.Repeat("\n", height)+helpText,
+			),
+		)
+	}
+
+	infoWrap := lipgloss.NewStyle().Foreground(lipgloss.Color("#EDEDED")).Render(i.infoValue)
+
+	return lipgloss.JoinHorizontal(
 		lipgloss.Left,
-		lipgloss.NewStyle().Foreground(lipgloss.Color("#EDEDED")).Render(i.label),
 		lipgloss.JoinVertical(
 			lipgloss.Left,
-			i.textInput.View(),
-			"\n"+strings.Repeat("\n", height)+helpText,
+			lipgloss.NewStyle().Foreground(lipgloss.Color("#EDEDED")).Render(i.label),
+			lipgloss.JoinVertical(
+				lipgloss.Left,
+				i.textInput.View(),
+				"\n"+strings.Repeat("\n", height)+helpText,
+			),
 		),
+		infoWrap,
 	)
 }
 
@@ -115,6 +163,12 @@ func (i *Input) Reset() {
 
 func (i *Input) Value() string {
 	return i.textInput.Value()
+}
+
+func (i *Input) PutInfoValue(name, value string) *Input {
+	i.infoValue += "| " + name + ": " + value + "\n"
+
+	return i
 }
 
 func initInputHelpKeyMap() inputHelpKeyMap {

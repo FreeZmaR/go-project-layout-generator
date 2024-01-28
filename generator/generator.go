@@ -64,6 +64,10 @@ func (g *Generator) ProjectSetting() *ProjectSetting {
 	return g.projectSetting
 }
 
+func (g *Generator) OutputDir() string {
+	return g.outputDir
+}
+
 func (g *Generator) SetOutputDir(dir string) *Generator {
 	g.outputDir = dir
 
