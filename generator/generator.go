@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/FreeZmaR/go-project-layout-generator/generator/modules"
 	"io"
 	"os"
 )
@@ -11,6 +12,7 @@ import (
 type Generator struct {
 	projectSetting    *ProjectSetting
 	structure         *Structure
+	modules           []modules.Module
 	isStructureParsed bool
 }
 
