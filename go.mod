@@ -3,9 +3,12 @@ module github.com/FreeZmaR/go-project-layout-generator
 go 1.21.0
 
 require (
+	github.com/BurntSushi/toml v1.3.2
 	github.com/charmbracelet/bubbles v0.17.1
 	github.com/charmbracelet/bubbletea v0.25.0
 	github.com/charmbracelet/lipgloss v0.9.1
+	github.com/joho/godotenv v1.5.1
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
